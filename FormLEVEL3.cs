@@ -29,7 +29,7 @@ namespace DoAnNhom_GAMERAN_
         bool isPaused = false;
         bool goLeft, goRight, goDown, goUp;
 
-        private DatabaseHelper db;
+        private Database db;
 
         private int currentUserId; // Add this field to the FormLEVEL1 class
 
@@ -80,7 +80,7 @@ namespace DoAnNhom_GAMERAN_
             AddObstacle(26, 27);
             AddObstacle(25, 27);
 
-            db = new DatabaseHelper(); // dùng class DatabaseHelper đã viết trước đó
+            db = new Database(); // dùng class Database đã viết trước đó
 
             currentUserId = userId; // giả định userId = 1, có thể thay bằng logic đăng nhập
 

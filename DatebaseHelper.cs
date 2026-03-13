@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Data.SqlClient;
 
+namespace DoAnNhom_GAMERAN_
+{
 public class DatabaseHelper
 {
     private string connectionString =
         "Data Source=MSI\\SQLEXPRESS;Initial Catalog=gameRan;Integrated Security=True;";
+
 
     // Lưu điểm của người chơi
     public void SaveScore(int userId, string levelName, int score)
@@ -131,4 +134,5 @@ public class DatabaseHelper
         }
     }
 
+}
 }

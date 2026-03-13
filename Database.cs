@@ -1,163 +1,106 @@
 ﻿using System;
-using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
-public class HighScoreDB
+namespace DoAnNhom_GAMERAN_
 {
-    private readonly string connStr = "Data Source=MSI\\SQLEXPRESS;Initial Catalog=gameRan;Integrated Security=True;";
-
-    // Lấy điểm cao nhất server theo level
-    public int GetHighScore(string levelName)
+    public class Database
     {
-        try
+        DataClasses2DataContext db = new DataClasses2DataContext();
+
+
+        // Lưu điểm của người chơi
+        public void SaveScore(int userId, string levelName, int score)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            // 1. Kiểm tra user có tồn tại
+            var user = db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                throw new Exception("User không tồn tại");
+
+            // 2. Lưu lịch sử điểm vào HighScores2
+            HighScores2 newScore = new HighScores2
             {
-                conn.Open();
-                string sql = "SELECT ISNULL(MAX(Score), 0) FROM HighScores WHERE LevelName = @level";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                UserId = userId,
+                LevelName = levelName,
+                Score = score
+            };
+
+            db.HighScores2s.InsertOnSubmit(newScore);
+            db.SubmitChanges();
+
+            // 3. Lấy điểm cao nhất server
+            var serverHigh = db.HighScores
+                               .FirstOrDefault(h => h.LevelName == levelName);
+
+            // 4. Nếu chưa có record
+            if (serverHigh == null)
+            {
+                HighScore hs = new HighScore
                 {
-                    cmd.Parameters.AddWithValue("@level", levelName);
-                    return (int)cmd.ExecuteScalar();
+                    LevelName = levelName,
+                    Score = score
+                };
+
+                db.HighScores.InsertOnSubmit(hs);
+            }
+            else
+            {
+                // nếu điểm mới cao hơn thì update
+                if (score > serverHigh.Score)
+                {
+                    serverHigh.Score = score;
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("GetHighScore lỗi: " + ex.Message);
-            return 0;
-        }
-    }
 
-    // Cập nhật điểm cao nhất server (chỉ lưu nếu score mới cao hơn)
-    public void UpdateServerHighScore(string levelName, int score)
-    {
-        try
+            db.SubmitChanges();
+        }
+
+        // Lấy điểm cao nhất của người chơi cho một level
+        public int GetUserHighScore(int userId, string levelName)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            var score = db.HighScores2s
+                          .Where(s => s.UserId == userId && s.LevelName == levelName)
+                          .Max(s => (int?)s.Score);
+
+            return score ?? 0;
+        }
+
+        // Lấy điểm cao nhất server cho một level
+        public int GetServerHighScore(string levelName)
+        {
+            var score = db.HighScores
+                          .Where(s => s.LevelName == levelName)
+                          .Select(s => (int?)s.Score)
+                          .FirstOrDefault();
+
+            return score ?? 0;
+        }
+        public int LoginUser(string username, string password)
+        {
+            var user = db.Users
+                         .FirstOrDefault(u => u.Username == username && u.Password == password);
+
+            return user != null ? user.Id : -1;
+        }
+
+        // Đăng ký: trả về UserId mới, -1 nếu username đã tồn tại
+        public int RegisterUser(string username, string password)
+        {
+            var exists = db.Users.Any(u => u.Username == username);
+
+            if (exists) return -1;
+
+            User newUser = new User
             {
-                conn.Open();
+                Username = username,
+                Password = password
+            };
 
-                // Kiểm tra đã có record chưa
-                string checkSql = "SELECT COUNT(*) FROM HighScores WHERE LevelName = @level";
-                using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
-                {
-                    checkCmd.Parameters.AddWithValue("@level", levelName);
-                    int exists = (int)checkCmd.ExecuteScalar();
+            db.Users.InsertOnSubmit(newUser);
+            db.SubmitChanges();
 
-                    if (exists == 0)
-                    {
-                        // Chưa có → INSERT
-                        string insertSql = "INSERT INTO HighScores (LevelName, Score) VALUES (@level, @score)";
-                        using (SqlCommand cmd = new SqlCommand(insertSql, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@level", levelName);
-                            cmd.Parameters.AddWithValue("@score", score);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                    else
-                    {
-                        // Đã có → UPDATE nếu score mới cao hơn
-                        string updateSql = @"UPDATE HighScores 
-                                             SET Score = @score 
-                                             WHERE LevelName = @level AND Score < @score";
-                        using (SqlCommand cmd = new SqlCommand(updateSql, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@level", levelName);
-                            cmd.Parameters.AddWithValue("@score", score);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
+            return newUser.Id;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("UpdateServerHighScore lỗi: " + ex.Message);
-        }
-    }
 
-
-
-    // Lưu điểm user vào HighScores2
-    public void SaveUserScore(int userId, string levelName, int score)
-    {
-        try
-        {
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                string sql = @"INSERT INTO HighScores2 (UserId, LevelName, Score)
-                               VALUES (@userId, @level, @score)";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@level", levelName);
-                    cmd.Parameters.AddWithValue("@score", score);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("SaveUserScore lỗi: " + ex.Message);
-        }
-    }
-
-    // Lấy điểm cao nhất của 1 user theo level
-    public int GetUserHighScore(int userId, string levelName)
-    {
-        try
-        {
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                string sql = @"SELECT ISNULL(MAX(Score), 0) FROM HighScores2 
-                               WHERE UserId = @userId AND LevelName = @level";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@level", levelName);
-                    return (int)cmd.ExecuteScalar();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("GetUserHighScore lỗi: " + ex.Message);
-            return 0;
-        }
-    }
-
-    // Lấy top 5 user điểm cao nhất theo level (join với bảng Users)
-    public DataTable GetLeaderboard(string levelName)
-    {
-        DataTable dt = new DataTable();
-        try
-        {
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                string sql = @"SELECT TOP 5 
-                                   u.Username, 
-                                   MAX(h.Score) AS BestScore
-                               FROM HighScores2 h
-                               JOIN dbo.Users u ON u.Id = h.UserId
-                               WHERE h.LevelName = @level
-                               GROUP BY u.Username
-                               ORDER BY BestScore DESC";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@level", levelName);
-                    new SqlDataAdapter(cmd).Fill(dt);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("GetLeaderboard lỗi: " + ex.Message);
-        }
-        return dt;
     }
 }
