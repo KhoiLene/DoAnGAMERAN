@@ -16,9 +16,10 @@ namespace DoAnNhom_GAMERAN_
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
+            string Email = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            int userId = db.LoginUser(username, password);
+            int userId = db.LoginUser(Email, username, password);
             if (userId > 0)
             {
                 MessageBox.Show("Đăng nhập thành công!");
@@ -37,6 +38,18 @@ namespace DoAnNhom_GAMERAN_
             FormRegister registerForm = new FormRegister();
             registerForm.Show();
             this.Hide();
+        }
+
+        private void ForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Email emailForm = new Email();
+            emailForm.Show();
+            this.Hide();
+        }
+
+        private void showPass_CheckedChanged(object sender, EventArgs e)
+        {
+            txtPassword.UseSystemPasswordChar = !showPass.Checked;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using DoAnNhom_GAMERAN_;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 public partial class FormRegister : Form
 {
     private Database db;
+    int otpCode;
 
     public FormRegister()
     {
@@ -29,16 +31,29 @@ public partial class FormRegister : Form
             return;
         }
 
+        // kiểm tra email đã tồn tại
+        if (db.CheckEmailExists(Email))
+        {
+            lblMessage.Text = "Email đã tồn tại!";
+            lblMessage.ForeColor = System.Drawing.Color.Red;
+            return;
+        }
+
         int result = db.RegisterUser(Email, username, password);
         if (result > 0)
         {
-            lblMessage.ForeColor = System.Drawing.Color.Green;
-            lblMessage.Text = "Đăng ký thành công!";
+            Random rnd = new Random();
+            otpCode = rnd.Next(100000, 999999);
 
-            // Mở FormLogin và đóng FormRegister
-            FormLogin loginForm = new FormLogin();
-            loginForm.Show();
-            this.Close();
+            // gửi OTP
+            SendOTP otpSender = new SendOTP();
+            otpSender.SendOTPEmail(Email, otpCode);
+
+            MessageBox.Show("OTP đã gửi đến email!");
+            OTPDangKy otpForm = new OTPDangKy(Email, otpCode);
+            otpForm.Show();
+            this.Hide();
+
         }
         else
         {

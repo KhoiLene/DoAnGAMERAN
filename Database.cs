@@ -75,16 +75,19 @@ namespace DoAnNhom_GAMERAN_
 
             return score ?? 0;
         }
-        public int LoginUser(string username, string password)
+        public int LoginUser(string Email, string username, string password)
         {
             var user = db.Users
-                         .FirstOrDefault(u => u.Username == username && u.Password == password);
+                .FirstOrDefault(u =>
+                    (u.Username == username || u.Email == Email) &&
+                    u.Password == password
+                );
 
             return user != null ? user.Id : -1;
         }
 
         // Đăng ký: trả về UserId mới, -1 nếu username đã tồn tại
-        public int RegisterUser(string username, string password, string Email)
+        public int RegisterUser(string Email, string username, string password)
         {
             var exists = db.Users.Any(u => u.Username == username);
 
@@ -92,15 +95,36 @@ namespace DoAnNhom_GAMERAN_
 
             User newUser = new User
             {
+                Email = Email,
                 Username = username,
-                Password = password,
-                Email = Email
+                Password = password
+                
             };
 
             db.Users.InsertOnSubmit(newUser);
             db.SubmitChanges();
 
             return newUser.Id;
+        }
+        public bool CheckEmailExists(string email)
+        {
+            return db.Users.Any(u => u.Email == email);
+        }
+        public User GetUserByEmail(string email)
+        {
+            return db.Users.FirstOrDefault(u => u.Email == email);
+        }
+
+        public void UpdatePassword(string email, string newUsername, string newPassword)
+        {
+            var user = db.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user != null)
+            {
+                user.Username = newUsername;
+                user.Password = newPassword;
+                db.SubmitChanges();
+            }
         }
 
     }
