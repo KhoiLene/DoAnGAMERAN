@@ -21,22 +21,25 @@ namespace DoAnNhom_GAMERAN_
             this.btnRegister = new System.Windows.Forms.Button();
             this.ForgotPassword = new System.Windows.Forms.LinkLabel();
             this.showPass = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.Back = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(51, 30);
+            this.txtUsername.Location = new System.Drawing.Point(180, 37);
             this.txtUsername.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(200, 22);
+            this.txtUsername.Size = new System.Drawing.Size(157, 22);
             this.txtUsername.TabIndex = 0;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(51, 70);
+            this.txtPassword.Location = new System.Drawing.Point(180, 70);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(200, 22);
+            this.txtPassword.Size = new System.Drawing.Size(156, 22);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
@@ -93,11 +96,45 @@ namespace DoAnNhom_GAMERAN_
             this.showPass.UseVisualStyleBackColor = true;
             this.showPass.CheckedChanged += new System.EventHandler(this.showPass_CheckedChanged);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 40);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(165, 16);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Email hoặc tên đăng nhập:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 76);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(64, 16);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Mật khẩu:";
+            // 
+            // Back
+            // 
+            this.Back.BackColor = System.Drawing.SystemColors.Control;
+            this.Back.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.Back.Location = new System.Drawing.Point(12, 11);
+            this.Back.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Back.Name = "Back";
+            this.Back.Size = new System.Drawing.Size(80, 25);
+            this.Back.TabIndex = 9;
+            this.Back.Text = "Back";
+            this.Back.UseVisualStyleBackColor = false;
+            this.Back.Click += new System.EventHandler(this.Back_Click);
+            // 
             // FormLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(349, 220);
+            this.Controls.Add(this.Back);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.showPass);
             this.Controls.Add(this.ForgotPassword);
             this.Controls.Add(this.txtUsername);
@@ -115,5 +152,8 @@ namespace DoAnNhom_GAMERAN_
 
         private LinkLabel ForgotPassword;
         private CheckBox showPass;
+        private Label label1;
+        private Label label2;
+        private Button Back;
     }
 }

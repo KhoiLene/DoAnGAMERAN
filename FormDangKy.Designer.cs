@@ -24,6 +24,7 @@
             this.btnRegister = new System.Windows.Forms.Button();
             this.lblMessage = new System.Windows.Forms.Label();
             this.ShowPass = new System.Windows.Forms.CheckBox();
+            this.Back = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -103,8 +104,6 @@
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(0, 16);
             this.lblMessage.TabIndex = 6;
-            
-           
             // 
             // ShowPass
             // 
@@ -117,9 +116,23 @@
             this.ShowPass.UseVisualStyleBackColor = true;
             this.ShowPass.CheckedChanged += new System.EventHandler(this.ShowPass_CheckedChanged);
             // 
+            // Back
+            // 
+            this.Back.BackColor = System.Drawing.SystemColors.Control;
+            this.Back.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.Back.Location = new System.Drawing.Point(12, 11);
+            this.Back.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Back.Name = "Back";
+            this.Back.Size = new System.Drawing.Size(80, 25);
+            this.Back.TabIndex = 11;
+            this.Back.Text = "Back";
+            this.Back.UseVisualStyleBackColor = false;
+            this.Back.Click += new System.EventHandler(this.Back_Click);
+            // 
             // FormRegister
             // 
             this.ClientSize = new System.Drawing.Size(400, 250);
+            this.Controls.Add(this.Back);
             this.Controls.Add(this.ShowPass);
             this.Controls.Add(this.txtEmail);
             this.Controls.Add(this.lblEmail);
@@ -136,4 +149,6 @@
             this.PerformLayout();
 
     }
+
+    private System.Windows.Forms.Button Back;
 }

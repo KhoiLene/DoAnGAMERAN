@@ -51,5 +51,12 @@ namespace DoAnNhom_GAMERAN_
         {
             txtPassword.UseSystemPasswordChar = !showPass.Checked;
         }
+
+        private void Back_Click(object sender, EventArgs e)
+        {
+            Form1 mainForm = new Form1();
+            mainForm.Show();
+            this.Hide();
+        }
     }
 }

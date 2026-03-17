@@ -66,4 +66,12 @@ public partial class FormRegister : Form
     {
         txtPassword.UseSystemPasswordChar = !ShowPass.Checked;
     }
+
+    private void Back_Click(object sender, EventArgs e)
+    {
+        FormLogin loginForm = new FormLogin();
+        loginForm.Show();
+        this.Hide();
+
+    }
 }
