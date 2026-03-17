@@ -84,7 +84,7 @@ namespace DoAnNhom_GAMERAN_
         }
 
         // Đăng ký: trả về UserId mới, -1 nếu username đã tồn tại
-        public int RegisterUser(string username, string password)
+        public int RegisterUser(string username, string password, string Email)
         {
             var exists = db.Users.Any(u => u.Username == username);
 
@@ -93,7 +93,8 @@ namespace DoAnNhom_GAMERAN_
             User newUser = new User
             {
                 Username = username,
-                Password = password
+                Password = password,
+                Email = Email
             };
 
             db.Users.InsertOnSubmit(newUser);

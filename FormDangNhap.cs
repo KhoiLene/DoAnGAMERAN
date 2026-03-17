@@ -5,12 +5,12 @@ namespace DoAnNhom_GAMERAN_
 {
     public partial class FormLogin : Form
     {
-        private DatabaseHelper db;
+        private Database db;
 
         public FormLogin()
         {
             InitializeComponent();
-            db = new DatabaseHelper();
+            db = new Database();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

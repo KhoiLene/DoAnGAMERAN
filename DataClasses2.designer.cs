@@ -391,6 +391,8 @@ namespace DoAnNhom_GAMERAN_
 		
 		private string _Username;
 		
+		private string _Email;
+		
 		private string _Password;
 		
 		private EntitySet<HighScores2> _HighScores2s;
@@ -403,6 +405,8 @@ namespace DoAnNhom_GAMERAN_
     partial void OnIdChanged();
     partial void OnUsernameChanging(string value);
     partial void OnUsernameChanged();
+    partial void OnEmailChanging(string value);
+    partial void OnEmailChanged();
     partial void OnPasswordChanging(string value);
     partial void OnPasswordChanged();
     #endregion
@@ -449,6 +453,26 @@ namespace DoAnNhom_GAMERAN_
 					this._Username = value;
 					this.SendPropertyChanged("Username");
 					this.OnUsernameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string Email
+		{
+			get
+			{
+				return this._Email;
+			}
+			set
+			{
+				if ((this._Email != value))
+				{
+					this.OnEmailChanging(value);
+					this.SendPropertyChanging();
+					this._Email = value;
+					this.SendPropertyChanged("Email");
+					this.OnEmailChanged();
 				}
 			}
 		}

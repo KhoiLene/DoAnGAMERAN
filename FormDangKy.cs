@@ -4,27 +4,32 @@ using System.Windows.Forms;
 
 public partial class FormRegister : Form
 {
-    private DatabaseHelper db;
+    private Database db;
 
     public FormRegister()
     {
         InitializeComponent();
-        db = new DatabaseHelper();
+        db = new Database();
+        txtEmail.TabIndex = 0;
+        txtUsername.TabIndex = 1;
+        txtPassword.TabIndex = 2;
     }
 
     private void btnRegister_Click(object sender, EventArgs e)
     {
+        string Email = txtEmail.Text.Trim();
         string username = txtUsername.Text.Trim();
         string password = txtPassword.Text.Trim();
+        
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             lblMessage.Text = "Vui lòng nhập đầy đủ thông tin!";
             lblMessage.ForeColor = System.Drawing.Color.Red;
             return;
         }
 
-        int result = db.RegisterUser(username, password);
+        int result = db.RegisterUser(Email, username, password);
         if (result > 0)
         {
             lblMessage.ForeColor = System.Drawing.Color.Green;
@@ -40,5 +45,10 @@ public partial class FormRegister : Form
             lblMessage.ForeColor = System.Drawing.Color.Red;
             lblMessage.Text = "Tên đăng nhập đã tồn tại!";
         }
+    }
+
+    private void ShowPass_CheckedChanged(object sender, EventArgs e)
+    {
+        txtPassword.UseSystemPasswordChar = !ShowPass.Checked;
     }
 }
