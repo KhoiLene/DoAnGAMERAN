@@ -77,6 +77,7 @@ namespace DoAnNhom_GAMERAN_
             {
                 conn.Open();
                 string guestName = "Guest" + Guid.NewGuid().ToString("N").Substring(0, 6);
+                string email = guestName + "@gmail.com";
 
                 string insertUser = @"INSERT INTO Users (Email, Username, Password) 
                       OUTPUT INSERTED.Id 
@@ -84,7 +85,7 @@ namespace DoAnNhom_GAMERAN_
 
                 using (SqlCommand cmd = new SqlCommand(insertUser, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Email", "guest@gmail.com"); // hoặc random
+                    cmd.Parameters.AddWithValue("@Email", email); // hoặc random
                     cmd.Parameters.AddWithValue("@Username", guestName);
                     cmd.Parameters.AddWithValue("@Password", "");
 
