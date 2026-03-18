@@ -92,7 +92,7 @@ namespace DoAnNhom_GAMERAN_
             // showPass
             // 
             this.showPass.AutoSize = true;
-            this.showPass.Location = new System.Drawing.Point(136, 97);
+            this.showPass.Location = new System.Drawing.Point(225, 97);
             this.showPass.Name = "showPass";
             this.showPass.Size = new System.Drawing.Size(114, 20);
             this.showPass.TabIndex = 6;
