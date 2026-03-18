@@ -11,6 +11,11 @@ namespace DoAnNhom_GAMERAN_
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Label lblNoAccount;
         private System.Windows.Forms.Button btnRegister;
+        private LinkLabel ForgotPassword;
+        private CheckBox showPass;
+        private Label label1;
+        private Label label2;
+        private Button Back;
 
         private void InitializeComponent()
         {
@@ -24,11 +29,10 @@ namespace DoAnNhom_GAMERAN_
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.Back = new System.Windows.Forms.Button();
-            this.SuspendLayout();
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(180, 37);
+            this.txtUsername.Location = new System.Drawing.Point(183, 37);
             this.txtUsername.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(157, 22);
@@ -36,7 +40,7 @@ namespace DoAnNhom_GAMERAN_
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(180, 70);
+            this.txtPassword.Location = new System.Drawing.Point(184, 70);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(156, 22);
@@ -131,7 +135,7 @@ namespace DoAnNhom_GAMERAN_
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(349, 220);
+            this.ClientSize = new System.Drawing.Size(351, 220);
             this.Controls.Add(this.Back);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -150,10 +154,6 @@ namespace DoAnNhom_GAMERAN_
 
         }
 
-        private LinkLabel ForgotPassword;
-        private CheckBox showPass;
-        private Label label1;
-        private Label label2;
-        private Button Back;
+
     }
 }
