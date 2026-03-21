@@ -12,11 +12,16 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace DoAnNhom_GAMERAN_
 {
-    public partial class FormLEVEL2 : Form
+    public partial class FormLEVEL20 : Form
     {
 
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
+        List<Circle> enemy1 = new List<Circle>();
+        List<Circle> enemy2 = new List<Circle>();
+
+        string enemyDir1Str = "right";
+        string enemyDir2Str = "down";
 
 
 
@@ -35,7 +40,7 @@ namespace DoAnNhom_GAMERAN_
 
         private int currentUserId; // Add this field to the FormLEVEL1 class
 
-        public FormLEVEL2(int userId)
+        public FormLEVEL20(int userId)
         {
             InitializeComponent();
 
@@ -46,13 +51,13 @@ namespace DoAnNhom_GAMERAN_
             currentUserId = userId; // giả định userId = 1, có thể thay bằng logic đăng nhập
 
             // lấy điểm cao nhất của người chơi
-            int userHS = db.GetUserHighScore(currentUserId, "Level2");
+            int userHS = db.GetUserHighScore(currentUserId, "Level20");
             txtHighScore.Text = "High Score:" + Environment.NewLine + userHS;
             txtHighScore.ForeColor = Color.Maroon;
             txtHighScore.TextAlign = ContentAlignment.MiddleCenter;
 
             // lấy điểm cao nhất server
-            int serverHS = db.GetServerHighScore("Level2");
+            int serverHS = db.GetServerHighScore("Level20");
             txtServerHighScore.Text = "Server High Score:" + Environment.NewLine + serverHS;
             txtServerHighScore.ForeColor = Color.DarkBlue;
             txtServerHighScore.TextAlign = ContentAlignment.MiddleCenter;
@@ -177,6 +182,281 @@ namespace DoAnNhom_GAMERAN_
 
         }
 
+        
+
+
+        private void UpdatePictureBoxGraphics(object sender, PaintEventArgs e)
+        {
+            Graphics canvas = e.Graphics;
+
+            Brush snakeColour;
+
+            for (int i = 0; i < Snake.Count; i++)
+            {
+                if (i == 0)
+                {
+                    snakeColour = Brushes.Black;
+                }
+                else
+                {
+                    snakeColour = Brushes.DarkGreen;
+                }
+
+                canvas.FillEllipse(snakeColour, new Rectangle
+                    (
+                    Snake[i].X * Settings.Width,
+                    Snake[i].Y * Settings.Height,
+                    Settings.Width, Settings.Height
+                    ));
+
+
+            }
+            // ===== Enemy 1 =====
+            foreach (Circle c in enemy1)
+            {
+                canvas.FillEllipse(Brushes.Red,
+                    c.X * Settings.Width,
+                    c.Y * Settings.Height,
+                    Settings.Width,
+                    Settings.Height);
+            }
+
+            // ===== Enemy 2 =====
+            foreach (Circle c in enemy2)
+            {
+                canvas.FillEllipse(Brushes.Orange,
+                    c.X * Settings.Width,
+                    c.Y * Settings.Height,
+                    Settings.Width,
+                    Settings.Height);
+            }
+
+
+            canvas.FillEllipse(Brushes.DarkRed, new Rectangle
+            (
+            food.X * Settings.Width,
+            food.Y * Settings.Height,
+            Settings.Width, Settings.Height
+            ));
+
+            
+            picCanvas.Width = 560;
+            picCanvas.Height = 600;
+        }
+
+        
+
+
+        private void GenerateFood()
+        {
+            Circle newFood;
+            bool onSnake;
+
+            do
+            {
+                onSnake = false;
+                newFood = new Circle
+                {
+                    X = rand.Next(2, maxWidth),
+                    Y = rand.Next(2, maxHeight)
+                };
+
+                // kiểm tra xem thức ăn có trùng với rắn không
+                foreach (Circle part in Snake)
+                {
+                    if (part.X == newFood.X && part.Y == newFood.Y)
+                    {
+                        onSnake = true;
+                        break;
+                    }
+                }
+            } while (onSnake);
+
+            food = newFood;
+        }
+        private void EatFood()
+        {
+            score += 1;
+            txtScore.Text = "Score: " + score;
+
+            Circle body = new Circle
+            {
+                X = Snake[Snake.Count - 1].X,
+                Y = Snake[Snake.Count - 1].Y
+            };
+            Snake.Add(body);
+
+            GenerateFood(); // gọi hàm mới
+        }
+
+        private string ChasePlayer(Circle enemyHead)
+        {
+            int dx = Snake[0].X - enemyHead.X;
+            int dy = Snake[0].Y - enemyHead.Y;
+
+            // ưu tiên hướng nào xa hơn
+            if (Math.Abs(dx) > Math.Abs(dy))
+            {
+                return dx > 0 ? "right" : "left";
+            }
+            else
+            {
+                return dy > 0 ? "down" : "up";
+            }
+        }
+
+        
+
+
+        private Circle GetNextPosition(Circle head, string dir)
+        {
+            Circle newHead = new Circle { X = head.X, Y = head.Y };
+
+            switch (dir)
+            {
+                case "left": newHead.X--; break;
+                case "right": newHead.X++; break;
+                case "up": newHead.Y--; break;
+                case "down": newHead.Y++; break;
+            }
+
+            return newHead;
+        }
+
+        private bool IsHitPlayerBody(Circle pos)
+        {
+            foreach (Circle s in Snake)
+            {
+                if (pos.X == s.X && pos.Y == s.Y)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsHitEnemyBody(Circle pos, List<Circle> enemy)
+        {
+            foreach (var c in enemy)
+            {
+                if (pos.X == c.X && pos.Y == c.Y)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsSafe(Circle pos, List<Circle> currentEnemy)
+        {
+            if (pos.X < 0 || pos.X > maxWidth ||
+                pos.Y < 0 || pos.Y > maxHeight)
+                return false;
+
+            if (IsHitPlayerBody(pos))
+                return false;
+            // đâm chính nó
+            if (IsHitEnemyBody(pos, currentEnemy))
+                return false;
+
+            // đâm enemy còn lại
+            if (currentEnemy == enemy1 && IsHitEnemyBody(pos, enemy2))
+                return false;
+
+            if (currentEnemy == enemy2 && IsHitEnemyBody(pos, enemy1))
+                return false;
+
+            return true;
+        }
+
+
+        private string GetSafeDirection(string currentDir, Circle head, List<Circle> currentEnemy)
+        {
+            List<string> dirs = new List<string> { "left", "right", "up", "down" };
+
+            foreach (string dir in dirs.OrderBy(x => rand.Next()))
+            {
+                Circle test = GetNextPosition(head, dir);
+
+                if (IsSafe(test, currentEnemy))
+                    return dir;
+            }
+
+            return currentDir;
+        }
+
+
+        private void MoveEnemies()
+        {
+            // ===== Enemy 1 =====
+            Circle head1 = enemy1[0];
+
+            // chọn hướng
+            enemyDir1Str = GetSafeDirection(enemyDir1Str, head1, enemy1);
+
+            Circle newHead1 = GetNextPosition(head1, enemyDir1Str);
+
+            if (!IsSafe(newHead1, enemy1))
+            {
+                enemyDir1Str = GetSafeDirection(enemyDir1Str, head1, enemy1);
+                newHead1 = GetNextPosition(head1, enemyDir1Str);
+            }
+
+            enemy1.Insert(0, newHead1);
+            enemy1.RemoveAt(enemy1.Count - 1);
+
+
+            // ===== Enemy 2 =====
+            Circle head2 = enemy2[0];
+
+            enemyDir2Str = GetSafeDirection(enemyDir2Str, head2, enemy2);
+
+            Circle newHead2 = GetNextPosition(head2, enemyDir2Str);
+
+            if (!IsSafe(newHead2, enemy2))
+            {
+                enemyDir2Str = GetSafeDirection(enemyDir2Str, head2, enemy2);
+                newHead2 = GetNextPosition(head2, enemyDir2Str);
+            }
+
+            enemy2.Insert(0, newHead2);
+            enemy2.RemoveAt(enemy2.Count - 1);
+        }
+
+
+
+        private bool IsHitEnemy()
+        {
+            foreach (Circle c in enemy1)
+            {
+                if (Snake[0].X == c.X && Snake[0].Y == c.Y)
+                    return true;
+            }
+
+            foreach (Circle c in enemy2)
+            {
+                if (Snake[0].X == c.X && Snake[0].Y == c.Y)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsSameCell(Circle a, Circle b)
+        {
+            int tolerance = 0; // = 0 là phải trùng hẳn
+
+            return Math.Abs(a.X - b.X) <= tolerance &&
+                   Math.Abs(a.Y - b.Y) <= tolerance;
+        }
+        private void TakeDamage()
+        {
+            // luôn mất 1 đốt
+            Snake.RemoveAt(Snake.Count - 1);
+
+            // sau khi mất → nếu hết thì chết
+            if (Snake.Count == 0)
+            {
+                GameOver();
+            }
+        }
+
         private void GameTimerEvent(object sender, EventArgs e)
         {
             Settings.directions = nextDirection;
@@ -227,111 +507,76 @@ namespace DoAnNhom_GAMERAN_
                 }
             }
 
+            // ===== Va chạm enemy =====
+            //foreach (Circle c in enemy1)
+            //{
+            //    if (IsSameCell(Snake[0], c))
+            //    {
+            //        GameOver();
+            //        return;
+            //    }
+            //}
+
+            //foreach (Circle c in enemy2)
+            //{
+            //    if (IsSameCell(Snake[0], c))
+            //    {
+            //        GameOver();
+            //        return;
+            //    }
+            //}
+
+            //int damageCooldown = 0;
+
+            //if (damageCooldown > 0)
+            //    damageCooldown--;
+
+            //if (IsHitEnemy() && damageCooldown == 0)
+            //{
+            //    TakeDamage();
+            //    damageCooldown = 10;
+            //}
+            if (IsHitEnemy())
+            {
+                GameOver();
+            }    
+            MoveEnemies();
+
             picCanvas.Invalidate();
         }
 
-
-        private void UpdatePictureBoxGraphics(object sender, PaintEventArgs e)
-        {
-            Graphics canvas = e.Graphics;
-
-            Brush snakeColour;
-
-            for (int i = 0; i < Snake.Count; i++)
-            {
-                if (i == 0)
-                {
-                    snakeColour = Brushes.Black;
-                }
-                else
-                {
-                    snakeColour = Brushes.DarkGreen;
-                }
-
-                canvas.FillEllipse(snakeColour, new Rectangle
-                    (
-                    Snake[i].X * Settings.Width,
-                    Snake[i].Y * Settings.Height,
-                    Settings.Width, Settings.Height
-                    ));
-
-
-            }
-
-
-            canvas.FillEllipse(Brushes.DarkRed, new Rectangle
-            (
-            food.X * Settings.Width,
-            food.Y * Settings.Height,
-            Settings.Width, Settings.Height
-            ));
-
-            //for (int x = 0; x <= maxWidth; x++)
-            //{
-            //    canvas.FillRectangle(Brushes.Gray, new Rectangle(
-            //        x * Settings.Width, 0, Settings.Width, Settings.Height)); // trên
-            //    canvas.FillRectangle(Brushes.Gray, new Rectangle(
-            //        x * Settings.Width, maxHeight * Settings.Height, Settings.Width, Settings.Height)); // dưới
-            //}
-            //for (int y = 0; y <= maxHeight; y++)
-            //{
-            //    canvas.FillRectangle(Brushes.Gray, new Rectangle(
-            //        0, y * Settings.Height, Settings.Width, Settings.Height)); // trái
-            //    canvas.FillRectangle(Brushes.Gray, new Rectangle(
-            //        maxWidth * Settings.Width, y * Settings.Height, Settings.Width, Settings.Height)); // phải
-            //}
-            //kich thuoc map
-            picCanvas.Width = 560;
-            picCanvas.Height = 600;
-        }
-
-
-
-        private void GenerateFood()
-        {
-            Circle newFood;
-            bool onSnake;
-
-            do
-            {
-                onSnake = false;
-                newFood = new Circle
-                {
-                    X = rand.Next(2, maxWidth),
-                    Y = rand.Next(2, maxHeight)
-                };
-
-                // kiểm tra xem thức ăn có trùng với rắn không
-                foreach (Circle part in Snake)
-                {
-                    if (part.X == newFood.X && part.Y == newFood.Y)
-                    {
-                        onSnake = true;
-                        break;
-                    }
-                }
-            } while (onSnake);
-
-            food = newFood;
-        }
-        private void EatFood()
-        {
-            score += 1;
-            txtScore.Text = "Score: " + score;
-
-            Circle body = new Circle
-            {
-                X = Snake[Snake.Count - 1].X,
-                Y = Snake[Snake.Count - 1].Y
-            };
-            Snake.Add(body);
-
-            GenerateFood(); // gọi hàm mới
-        }
-
-
         private void RestartGame()
         {
+            // ===== Enemy 1 =====
+            enemy1.Clear();
+
+            int startX = 10;
+            int startY = 10;
+
+            for (int i = 0; i < 10; i++)
+            {
+                enemy1.Add(new Circle
+                {
+                    X = startX - i,
+                    Y = startY
+                });
+            }
+
+            // ===== Enemy 2 =====
+            enemy2.Clear();
+
+            int x = 20;
+            int y = 5;
+
+            for (int i = 0; i < 10; i++)
+            {
+                enemy2.Add(new Circle
+                {
+                    X = x,
+                    Y = y + i
+                });
+            }
+
             maxWidth = picCanvas.Width / Settings.Width;
             maxHeight = picCanvas.Height / Settings.Height;
 
@@ -373,6 +618,7 @@ namespace DoAnNhom_GAMERAN_
 
             gameTimer.Start();
         }
+        
         private void GameOver()
         {
             gameTimer.Stop();
@@ -384,13 +630,13 @@ namespace DoAnNhom_GAMERAN_
 
 
 
-            db.SaveScore(currentUserId, "Level2", score);
+            db.SaveScore(currentUserId, "Level20", score);
 
-            int userHS = db.GetUserHighScore(currentUserId, "Level2");
-            
+            int userHS = db.GetUserHighScore(currentUserId, "Level20");
+
             txtHighScore.Text = "High Score:" + Environment.NewLine + userHS;
 
-            int serverHS = db.GetServerHighScore("Level2");
+            int serverHS = db.GetServerHighScore("Level20");
             txtServerHighScore.Text = "Server High Score:" + Environment.NewLine + serverHS;
 
         }

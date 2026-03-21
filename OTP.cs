@@ -31,7 +31,7 @@ namespace DoAnNhom_GAMERAN_
                 MessageBox.Show("OTP đúng!");
                 NewPassword form = new NewPassword(userEmail);
                 form.Show();
-                this.Hide();
+                this.Close();
             }
             else
             {

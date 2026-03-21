@@ -221,6 +221,12 @@
     <Compile Include="FormLEVEL2.Designer.cs">
       <DependentUpon>FormLEVEL2.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormLEVEL20.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLEVEL20.Designer.cs">
+      <DependentUpon>FormLEVEL20.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormLEVEL3.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -272,6 +278,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormLEVEL2.resx">
       <DependentUpon>FormLEVEL2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLEVEL20.resx">
+      <DependentUpon>FormLEVEL20.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormLEVEL3.resx">
       <DependentUpon>FormLEVEL3.cs</DependentUpon>

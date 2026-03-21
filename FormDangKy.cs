@@ -52,7 +52,7 @@ public partial class FormRegister : Form
             MessageBox.Show("OTP đã gửi đến email!");
             OTPDangKy otpForm = new OTPDangKy(Email, otpCode);
             otpForm.Show();
-            this.Hide();
+            this.Close();
 
         }
         else
@@ -71,7 +71,7 @@ public partial class FormRegister : Form
     {
         FormLogin loginForm = new FormLogin();
         loginForm.Show();
-        this.Hide();
+        this.Close();
 
     }
 }

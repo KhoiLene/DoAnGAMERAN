@@ -50,7 +50,7 @@ namespace DoAnNhom_GAMERAN_
             MessageBox.Show("OTP đã gửi đến email!");
             OTP otpForm = new OTP(email, otpCode);
             otpForm.Show();
-            this.Hide();
+            this.Close();
         }
     }
 }

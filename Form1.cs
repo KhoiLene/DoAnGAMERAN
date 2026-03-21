@@ -6,33 +6,24 @@ namespace DoAnNhom_GAMERAN_
 {
     public partial class Form1 : Form
     {
-        private string connectionString =
-            "Data Source=MSI\\SQLEXPRESS;Initial Catalog=gameRan;Integrated Security=True;";
-
-        private int currentUserId = -1; // mặc định chưa chọn
+        private int currentUserId = -1;
+        private DataClasses2DataContext db = new DataClasses2DataContext();
 
         public Form1(int userId)
         {
             InitializeComponent();
             currentUserId = userId;
+            button1.Enabled = true; // đã login thì cho chơi luôn
         }
 
         public Form1()
         {
             InitializeComponent();
-
-            // Lúc đầu, nút Start bị disable
-            button1.Enabled = false;
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Application.Exit();
+            button1.Enabled = false; // chưa chọn thì disable
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Chỉ cho chơi nếu đã chọn Guest hoặc Login
             if (currentUserId != -1)
             {
                 FormGAME gameForm = new FormGAME(currentUserId);
@@ -60,39 +51,35 @@ namespace DoAnNhom_GAMERAN_
             if (result == DialogResult.OK)
             {
                 currentUserId = CreateGuestUser();
-                button1.Enabled = true; // bật nút Start
+                button1.Enabled = true;
             }
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
             FormLogin loginForm = new FormLogin();
-            loginForm.Show();   // mở form đăng nhập
-            this.Hide();        // ẩn Form1
+            loginForm.Show();
+            this.Hide();
         }
+
+        // ================= LINQ =================
 
         private int CreateGuestUser()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            string guestName = "Guest" + Guid.NewGuid().ToString("N").Substring(0, 6);
+            string email = guestName + "@gmail.com";
+
+            User newUser = new User
             {
-                conn.Open();
-                string guestName = "Guest" + Guid.NewGuid().ToString("N").Substring(0, 6);
-                string email = guestName + "@gmail.com";
+                Email = email,
+                Username = guestName,
+                Password = ""
+            };
 
-                string insertUser = @"INSERT INTO Users (Email, Username, Password) 
-                      OUTPUT INSERTED.Id 
-                      VALUES (@Email, @Username, @Password)";
+            db.Users.InsertOnSubmit(newUser);
+            db.SubmitChanges();
 
-                using (SqlCommand cmd = new SqlCommand(insertUser, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Email", email); // hoặc random
-                    cmd.Parameters.AddWithValue("@Username", guestName);
-                    cmd.Parameters.AddWithValue("@Password", "");
-
-                    int newId = (int)cmd.ExecuteScalar();
-                    return newId;
-                }
-            }
+            return newUser.Id;
         }
     }
 }

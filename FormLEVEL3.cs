@@ -415,7 +415,7 @@ namespace DoAnNhom_GAMERAN_
             score = 0;
             txtScore.Text = "Score: " + score;
 
-            int safeMargin = Snake.Count + 2;
+            int safeMargin = Snake.Count + 10;
 
             // chọn vị trí đầu rắn không trùng với vật cản
             Circle head;
@@ -443,7 +443,7 @@ namespace DoAnNhom_GAMERAN_
             Snake.Add(head);
 
             // thêm thân rắn
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 4; i++)
             {
                 Circle body = new Circle();
                 Snake.Add(body);

@@ -56,6 +56,7 @@ namespace DoAnNhom_GAMERAN_
                 case 1: levelForm = new FormLEVEL1(currentUserId); break;
                 case 2: levelForm = new FormLEVEL2(currentUserId); break;
                 case 3: levelForm = new FormLEVEL3(currentUserId); break;
+                case 20: levelForm = new FormLEVEL20(currentUserId); break;
                 // Thêm các level khác ở đây khi bạn tạo form
                 // case 4:  levelForm = new FormLEVEL4(currentUserId); break;
                 // case 5:  levelForm = new FormLEVEL5(currentUserId); break;
@@ -69,7 +70,7 @@ namespace DoAnNhom_GAMERAN_
             if (levelForm != null)
             {
                 levelForm.Show();
-                this.Close();
+                this.Hide();
             }
         }
 
@@ -117,9 +118,9 @@ namespace DoAnNhom_GAMERAN_
             }
         }
 
-        private void FormGAME_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Application.Exit();
-        }
+        //private void FormGAME_FormClosing(object sender, FormClosingEventArgs e)
+        //{
+        //    Application.Exit();
+        //}
     }
 }

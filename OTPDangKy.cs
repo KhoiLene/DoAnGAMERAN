@@ -29,7 +29,7 @@ namespace DoAnNhom_GAMERAN_
                 MessageBox.Show("Đăng ký thành công!");
                 FormLogin form = new FormLogin();
                 form.Show();
-                this.Hide();
+                this.Close();
             }
             else
             {
@@ -37,6 +37,11 @@ namespace DoAnNhom_GAMERAN_
             }
         }
 
-
+        private void Back_Click(object sender, EventArgs e)
+        {
+            FormRegister registerForm = new FormRegister();
+            registerForm.Show();
+            this.Close();
+        }
     }
 }

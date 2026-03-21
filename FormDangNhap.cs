@@ -25,7 +25,7 @@ namespace DoAnNhom_GAMERAN_
                 MessageBox.Show("Đăng nhập thành công!");
                 Form1 mainForm = new Form1(userId); // truyền userId vào Form1
                 mainForm.Show();
-                this.Hide();
+                this.Close();
             }
             else
             {
@@ -37,14 +37,14 @@ namespace DoAnNhom_GAMERAN_
         {
             FormRegister registerForm = new FormRegister();
             registerForm.Show();
-            this.Hide();
+            this.Close();
         }
 
         private void ForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Email emailForm = new Email();
             emailForm.Show();
-            this.Hide();
+            this.Close();
         }
 
         private void showPass_CheckedChanged(object sender, EventArgs e)
@@ -56,7 +56,7 @@ namespace DoAnNhom_GAMERAN_
         {
             Form1 mainForm = new Form1();
             mainForm.Show();
-            this.Hide();
+            this.Close();
         }
     }
 }
